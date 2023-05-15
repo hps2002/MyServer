@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>微信聊天界面</title>
+    <style type="text/css">
+        body {
+            background-color: #eee;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .chat-box .message {
+            margin-bottom: 10px;
+        }
+        .chat-box .message p {
+            margin: 0;
+            padding: 5px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 60%!;(MISSING)
+        }
+        .chat-box .message .sender {
+            float: right;
+            background-color: #d5e5f5;
+        }
+        .chat-box .message .receiver {
+            float: left;
+            background-color: #e5f5d5;
+        }
+        .message-input {
+            width: 100%!;(MISSING)
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-family: 'Arial', sans-serif;
+        }
+        .send-button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-box">
+            <div class="message">
+                <p class="sender">Hello!</p>
+            </div>
+            <div class="message">
+                <p class="receiver">Hi there!</p>
+            </div>
+            <div class="message">
+                <p class="sender">How are you?</p>
+            </div>
+            <div class="message">
+                <p class="receiver">I'm good, thanks. And you?</p>
+            </div>
+            <div class="message">
+                <p class="sender">I'm fine too.</p>
+            </div>
+            <div class="message">
+                <p class="sender">Bye!</p>
+            </div>
+            <div class="message">
+                <p class="receiver">Bye!</p>
+            </div>
+        </div>
+        <form method = "post">
+            <input type="text" class="message-input" placeholder="Type your message...">
+            <button type="submit" class="send-button" >Send</button>
+        </form>
+    </div>
+</body>
+</html>

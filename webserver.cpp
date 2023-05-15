@@ -71,16 +71,16 @@ void WebServer::trig_mode()
         m_CONNTrigmode = 1;
     }
 }
-
+ 
 void WebServer::log_write()
 {
     if (0 == m_close_log)
     {
         //初始化日志
         if (1 == m_log_write)
-            Log::get_instance()->init("./ServerLog", m_close_log, 2000, 800000, 800);
+            Log::get_instance()->init("ServerLog", m_close_log, 2000, 800000, 800);
         else
-            Log::get_instance()->init("./ServerLog", m_close_log, 2000, 800000, 0);
+            Log::get_instance()->init("ServerLog", m_close_log, 2000, 800000, 0);
     }
 }
 
@@ -118,6 +118,7 @@ void WebServer::eventListen()
         setsockopt(m_listenfd, SOL_SOCKET, SO_LINGER, &tmp, sizeof(tmp));
     }
 
+    //绑定网络地址
     int ret = 0;
     struct sockaddr_in address;
     bzero(&address, sizeof(address));
@@ -125,6 +126,7 @@ void WebServer::eventListen()
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(m_port);
 
+    //设置端口可重用，绑定ip地址和端口
     int flag = 1;
     setsockopt(m_listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
     ret = bind(m_listenfd, (struct sockaddr *)&address, sizeof(address));
@@ -199,9 +201,10 @@ void WebServer::deal_timer(util_timer *timer, int sockfd)
 
 bool WebServer::dealclinetdata()
 {
+    
     struct sockaddr_in client_address;
     socklen_t client_addrlength = sizeof(client_address);
-    if (0 == m_LISTENTrigmode)
+    if (0 == m_LISTENTrigmode)// LT模式下的操作
     {
         int connfd = accept(m_listenfd, (struct sockaddr *)&client_address, &client_addrlength);
         if (connfd < 0)
@@ -215,9 +218,9 @@ bool WebServer::dealclinetdata()
             LOG_ERROR("%s", "Internal server busy");
             return false;
         }
+        //
         timer(connfd, client_address);
     }
-
     else
     {
         while (1)

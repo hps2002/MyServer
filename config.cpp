@@ -2,10 +2,10 @@
 
 Config::Config(){
     //端口号,默认9006
-    PORT = 9006;
+    PORT = 80;
 
     //日志写入方式，默认同步
-    LOGWrite = 0;
+    LOGWrite = 1;
 
     //触发组合模式,默认listenfd LT + connfd LT
     TRIGMode = 0;
@@ -28,8 +28,8 @@ Config::Config(){
     //关闭日志,默认不关闭
     close_log = 0;
 
-    //并发模型,默认是proactor
-    actor_model = 0;
+    //并发模型,默认是reactor
+    actor_model = 1;
 }
 
 void Config::parse_arg(int argc, char*argv[]){

@@ -1,7 +1,8 @@
 #include "http_conn.h"
-
+#include <iostream>
 #include <mysql/mysql.h>
 #include <fstream>
+using namespace std;
 
 //定义http响应的一些状态信息
 const char *ok_200_title = "OK";
@@ -395,7 +396,6 @@ http_conn::HTTP_CODE http_conn::do_request()
     //处理cgi
     if (cgi == 1 && (*(p + 1) == '2' || *(p + 1) == '3'))
     {
-
         //根据标志判断是登录检测还是注册检测
         char flag = m_url[1];
 
@@ -496,6 +496,24 @@ http_conn::HTTP_CODE http_conn::do_request()
 
         free(m_url_real);
     }
+    else if (*(p + 1) == '8')
+    {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/chat.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        cout << *m_real_file;
+
+        free(m_url_real);
+    }
+    /*
+    else if (*(p + 1) == '9')
+    {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "hello world!");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+
+        free(m_url_real);
+    }*/
     else
         strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
 

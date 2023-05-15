@@ -41,7 +41,6 @@ bool Log::init(const char *file_name, int close_log, int log_buf_size, int split
     time_t t = time(NULL);
     struct tm *sys_tm = localtime(&t);
     struct tm my_tm = *sys_tm;
-
  
     const char *p = strrchr(file_name, '/');
     char log_full_name[256] = {0};
