@@ -37,7 +37,9 @@
 
 然后初始化 `utils` 类，初始化时间单位；
 
-注册epoll内核事件表 `m_epollfd = epoll_create(5)` ，得到epoll事件的文件描述符 `m_epollfd` 。将`epoll_fd`添加到untils类时间链表中。创建一对无名的套接字用于进程之间的通信，得到文件描述符 `ret`。
+注册epoll内核事件表 `m_epollfd = epoll_create(5)` ，得到epoll事件的文件描述符 `m_epollfd` 。将`epoll_fd`添加到untils类时间链表中。创建一对无名的套接字`m_pipefd`用于进程之间的通信，线程之间使用这一对套接字进行信号的传递。
+
+其中函数`epoll_create(5)`中参数5的作用是告诉内核创建epoll事件表的大小为5.
 
 ## 运行
 运行采用的是reactor模式，主线程不断接收客户端的连接处理线程，让线程池中的线程进行业务处理最后返回主线程发送响应消息。
@@ -45,7 +47,16 @@
 使用epoll的多路复用观测事件的发生，
 主线程通过在while中不断地轮询事件地发生，并且在`epoll_wait()`中被阻塞，直到有事件发生，返回事件发生的个数以及对应事件的文件描述符。
 
-将每个文件描述符进行判断，如果是监听的socket文件描述符说明是新的客户端连接请求。则调用对应的处理函数对新来到的连接调用`accpet()`接收，得到文件描述符 `connfd`，并且注册到timer（定时器中）。
+* 如果是监听的socket文件描述符 `m_listenfd` 说明是新的客户端连接请求。则调用对应的处理函数对新来到的连接调用`accpet()`接收，得到文件描述符 `connfd`，并且注册到timer（定时器中）。
+* 如果得到的事件是epoll中的`EPOLLRDHUP`、`EPOLLHUP`、`EPOLLERR`的其中一个，表示服务端关闭了连接，此时调用`deal_timer()`移除对应的定时器。<br><br>其中`EPOLLRDHUP`事件是由于服务器接收到对端正常关闭连接的请求触发，`EPOLLHUP`由于对端socket的文件描述符被挂断，服务器自己断开连接； `EPOLLERR` 由于对端的socket文件描述符发生错误，服务器断开连接。
 
+* 当前处理的文件描述符和之前创建的通信套接字`m_pipefd`中读到的一样且事件类型是`EPOLLIN`则进入信号处理函数`dealwithsignal()`：<br>
+
+在 `dealwithsignal()` 函数中通过 `recv()`函数从缓冲区中接收另外先线程的信号存放在`signal[1024]`中，`ret()`返回接收的字节数，如果接收的字节数小于等于0直接返回false；反之则对每个字节的的信号进行处理，如果 `signal[i] == SIGLRM`将time_out设置为true，**(和定时器相关)**；如果 `signal[i] == SIGTERM` 则将stop_server设置为true, 停止服务器。
+
+* 如果 `event[i].events` 是 `EPOLLIN`类型的事件说明要处理客户端上的信号，调用`dealwiththread()`<br>
+
+在`dealwiththread()`函数中:
+`sockfd`是要处理客户端socket的文件描述符，在reactor模式下，先调整定时器重置当前客户端socket的计时。如果检测到读事件则调用 `append()` 将改事件放入请求队列中
 
 

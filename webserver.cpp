@@ -249,7 +249,10 @@ bool WebServer::dealwithsignal(bool &timeout, bool &stop_server)
     int ret = 0;
     int sig;
     char signals[1024];
+
+    // recv接收()
     ret = recv(m_pipefd[0], signals, sizeof(signals), 0);
+    
     if (ret == -1)
     {
         return false;
@@ -295,6 +298,7 @@ void WebServer::dealwithread(int sockfd)
         //若监测到读事件，将该事件放入请求队列
         m_pool->append(users + sockfd, 0);
 
+        // 干啥用？user[sockfd]有什么用？
         while (true)
         {
             if (1 == users[sockfd].improv)
